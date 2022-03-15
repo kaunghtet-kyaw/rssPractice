@@ -14,6 +14,7 @@
     <div class="container">
         <div class="row">
         <h3>Add Post</h3>
+            <?php echo validation_errors("<div class='alert alert-danger'>","</div>"); ?>
             <form action="" method="POST" role="form">
                 <div>
                     <label for="post_title">Title</label><br>

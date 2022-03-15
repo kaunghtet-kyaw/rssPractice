@@ -15,7 +15,7 @@ class posts_log extends CI_Model {
 
     }
 
-    function createDateLog()  
+    public function createDateLog()  
     {  
         date_default_timezone_set('Asia/Yangon');
         $data = ['latest_modified_date' => date('Y/m/d H:i:s', time())];

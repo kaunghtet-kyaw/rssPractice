@@ -10,21 +10,24 @@ class Feed extends CI_Controller
 
         $this->load->helper('xml');
         $this->load->helper('text');
-        $this->load->model('post_model','posts');
-        $this->load->model('posts_log','posts_log');
+        $this->load->model('post_model');
+        $this->load->model('posts_log');
 
+        $this->load->helper('form','url');
+        $this->load->library('form_validation');
 
 	}
 	
 	public function index()  
     {  
-        $data['encoding']           = 'utf-8'; 
-        $data['feed_name']          = '';   
-        $data['feed_url']           = 'http://localhost/ci-project/feed'; 
-        $data['page_description']   = ''; 
-        $data['page_language']      = 'en-en';  
-        $data['creator_email']      = 'khtetkyaw.andfun@gmail.com';  
-        $data['posts'] = $this->posts->getPosts();
+        $post_data['encoding']           = 'utf-8'; 
+        $post_data['feed_name']          = '';   
+        $post_data['feed_url']           = 'http://localhost/ci-project/feed'; 
+        $post_data['page_description']   = ''; 
+        $post_data['page_language']      = 'en-en';  
+        $post_data['creator_email']      = 'khtetkyaw.andfun@gmail.com';  
+        $post_data['posts'] = $this->post_model->getPosts();
+
 
         $time = $this->posts_log->getLog();
 
@@ -41,27 +44,43 @@ class Feed extends CI_Controller
         http_response_code(200);
         $this->output->set_header('X-CONTENT-RETURN: YES');
         $this->output->set_header('Content-Type: text/xml'); 
-        $this->load->view('rss', $data);
+        $this->load->view('rss', $post_data);
     }
 
     public function create() {
 
-        $this->load->view('posts/add_posts');
+        if(!$this->input->post('create')){
 
-        if($this->input->post('create')) {
+            $this->load->view('posts/add_posts'); 
+        }
+
+        else{
+
             $data['post_title'] = $this->input->post('post_title');
             $data['post_content'] = $this->input->post('post_content');
-            $response = $this->posts->createPosts($data);
 
-            if($response == true) {
-                $this->posts_log->createDateLog();
-                echo "Sucessfully posted.";
-            }else{
-                echo "Sorry, error is occurring.";
+            $this->form_validation->set_rules('post_title', 'Post_title', 'required');
+            $this->form_validation->set_rules('post_content', 'Post_content', 'required');
+
+            if($this->form_validation->run() == FALSE){
+                $this->load->view('posts/add_posts');
+                
             }
-            redirect('feed');
+            else{
+
+                $response = $this->post_model->createPosts($data);
+    
+                if($response == true) {
+                    $this->posts_log->createDateLog();
+                    echo "Sucessfully posted.";
+                }else{
+                    echo "Sorry, error is occurring.";
+                }
+                redirect('feed');
+
+            }
 
         }
-    }    
+    }
 
 }

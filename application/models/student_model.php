@@ -7,14 +7,14 @@ class student_model extends CI_Model {
         $this->load->database();
     }
 
-    function getAllData(){
+    public function getAllData(){
         $this->db->select('*');
         $this->db->from('students');
         $query = $this->db->get();
         return $query->result();
     }
 
-    function getData($id){
+    public function getData($id){
         // $query = $this->db->query('SELECT * FROM students WHERE `id` =' .$id);
         // return $query->row();
 
@@ -26,7 +26,7 @@ class student_model extends CI_Model {
     }
 
 
-    function createData($studentData){
+    public function createData($studentData){
         $this->db->insert('students', $studentData);
     }
 
